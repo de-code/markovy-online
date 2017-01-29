@@ -37886,8 +37886,6 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var worker = new _markov2.default();
-
 	var defer = function defer() {
 	  var deferred = {};
 	  deferred.promise = new Promise(function (resolve, reject) {
@@ -37897,15 +37895,25 @@
 	  return deferred;
 	};
 
+	var previousWorker = void 0;
+
 	var markovClientFactory = function markovClientFactory(lines, options) {
 	  var generateSentencesDeferred = void 0;
+	  var generateSentencesId = 1;
+
+	  if (previousWorker) {
+	    previousWorker.terminate();
+	  }
+
+	  var worker = new _markov2.default();
+	  previousWorker = worker;
 
 	  worker.onmessage = function (event) {
 	    var data = event.data;
 
 	    switch (data.type) {
 	      case 'sentences':
-	        if (generateSentencesDeferred) {
+	        if (generateSentencesDeferred && generateSentencesId === data.reqId) {
 	          generateSentencesDeferred.resolve(data.sentences);
 	          generateSentencesDeferred = null;
 	        }
@@ -37925,9 +37933,11 @@
 
 	  var generateSentences = function generateSentences(count) {
 	    generateSentencesDeferred = defer();
+	    generateSentencesId++;
 	    worker.postMessage({
 	      type: 'generateSentences',
-	      count: count
+	      count: count,
+	      reqId: generateSentencesId
 	    });
 	    return generateSentencesDeferred.promise;
 	  };
@@ -37947,7 +37957,7 @@
 	"use strict";
 
 	module.exports = function () {
-		return new Worker(__webpack_require__.p + "ca020b1e631218efe951.worker.js");
+		return new Worker(__webpack_require__.p + "caeffbe113a3c42a3e12.worker.js");
 	};
 
 /***/ },

@@ -1,7 +1,5 @@
 import MarkovWorker from './markov.worker';
 
-const worker = new MarkovWorker();
-
 const defer = () => {
   const deferred = {};
   deferred.promise = new Promise((resolve, reject) => {
@@ -11,14 +9,24 @@ const defer = () => {
   return deferred;
 }
 
+let previousWorker;
+
 const markovClientFactory = (lines, options) => {
   let generateSentencesDeferred;
+  let generateSentencesId = 1;
+
+  if (previousWorker) {
+    previousWorker.terminate();
+  }
+
+  const worker = new MarkovWorker();
+  previousWorker = worker;
 
   worker.onmessage = event => {
     const { data } = event;
     switch(data.type) {
     case 'sentences':
-      if (generateSentencesDeferred) {
+      if (generateSentencesDeferred && generateSentencesId === data.reqId) {
         generateSentencesDeferred.resolve(data.sentences);
         generateSentencesDeferred = null;
       }
@@ -36,9 +44,11 @@ const markovClientFactory = (lines, options) => {
 
   const generateSentences = count => {
     generateSentencesDeferred = defer();
+    generateSentencesId++;
     worker.postMessage({
       type: 'generateSentences',
-      count
+      count,
+      reqId: generateSentencesId
     });
     return generateSentencesDeferred.promise;
   };

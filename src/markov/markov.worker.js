@@ -4,7 +4,8 @@ let markovClient;
 
 onmessage = event => {
   const { data } = event;
-  switch(data.type) {
+  const { type, reqId } = data;
+  switch(type) {
   case 'init':
     markovClient = markovClientFactory(data.lines, data.options);
     markovClient.buildCorpus().then(() => postMessage({
@@ -14,7 +15,8 @@ onmessage = event => {
   case 'generateSentences':
     markovClient.generateSentences(data.count).then(sentences => postMessage({
       type: 'sentences',
-      sentences
+      sentences,
+      reqId
     }));
     break;
   default:
