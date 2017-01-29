@@ -1,6 +1,6 @@
 import React from 'react';
 import { createSelector } from 'reselect';
-import Markov from 'markov-strings';
+import markovClientFactory from '../../markov';
 import debounce from 'debounce';
 
 import {
@@ -95,8 +95,8 @@ class Main extends React.Component {
         if (!parsedData.lines) {
           return;
         }
-        const markov = new Markov(parsedData.lines, markovOptions);
-        markov.buildCorpusSync();
+        const markov = markovClientFactory(parsedData.lines, markovOptions);
+        markov.buildCorpus();
         return markov;
       }
     );
@@ -105,16 +105,18 @@ class Main extends React.Component {
       () => this.state.sentenceCount,
       (markov, sentenceCount) => {
         if (!markov) {
-          return [];
+          return Promise.resolve([]);
         }
-        return range(sentenceCount).map(() => markov.generateSentenceSync().string);
+        return markov.generateSentences(sentenceCount);
       }
     );
     this.updateGenerationDebounced = debounce(() => {
-      const generateSentences = this.getGeneratedSentences();
-      this.setState({
-        generateSentences,
-        loading: false
+      this.getGeneratedSentences().then(generateSentences => {
+        console.log("generateSentences:", generateSentences);
+        this.setState({
+          generateSentences,
+          loading: false
+        });
       });
     }, 200);
     this.updateGeneration = () => {

@@ -17,20 +17,22 @@ module.exports = {
   },
   module: {
     loaders: [{
-        test: /\.css$/,
-        loader: "style-loader!css-loader"
-      }, {
-        test: /\.html$/,
-        loader: "file?name=[name].[ext]"
-      }, {
-        test: /\.js$|\.jsx?$/,
-        loaders: ['babel-loader'],
-        exclude: [/node_modules/]
-      }, {
-        test: /\.(eot|gif|png|svg|ttf|woff(2)?)(\?v=\d+\.\d+\.\d+)?/,
-        loader: 'url-loader'
-    }
-    ]
+      test: /\.css$/,
+      loader: "style-loader!css-loader"
+    }, {
+      test: /\.html$/,
+      loader: "file?name=[name].[ext]"
+    }, {
+      test: /\.js$|\.jsx?$/,
+      loaders: ['babel-loader'],
+      exclude: [/node_modules/]
+    }, {
+      test: /worker\.js$/,
+      loaders: ['worker-loader', 'babel-loader']
+    }, {
+      test: /\.(eot|gif|png|svg|ttf|woff(2)?)(\?v=\d+\.\d+\.\d+)?/,
+      loader: 'url-loader'
+    }]
   },
   plugins: [
     new webpack.DefinePlugin({
