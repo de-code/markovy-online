@@ -37411,6 +37411,7 @@
 
 	var KEY_NAME = 'mrkvy_file';
 	var KEY_DATA = 'mrkvy_data';
+	var KEY_SETTINGS = 'mrkvy_settings';
 
 	var styles = {
 	  card: {
@@ -37507,14 +37508,15 @@
 	    var _this = _possibleConstructorReturn(this, (Main.__proto__ || Object.getPrototypeOf(Main)).call(this, props));
 
 	    var file = _this.restoreFile();
+	    var settings = _this.restoreSettings();
 	    _this.state = {
 	      file: file,
-	      markovOptions: {
+	      markovOptions: settings && settings.markovOptions || {
 	        stateSize: 3,
 	        minWords: 10,
 	        maxWords: 0
 	      },
-	      sentenceCount: 10
+	      sentenceCount: settings && settings.sentenceCount || 10
 	    };
 	    _this.onLoad = function (file) {
 	      console.log("onload:", file && file.name);
@@ -37563,6 +37565,10 @@
 	      return markov.generateSentences(sentenceCount);
 	    });
 	    _this.updateGenerationDebounced = (0, _debounce2.default)(function () {
+	      _this.saveSettings({
+	        sentenceCount: _this.state.sentenceCount,
+	        markovOptions: _this.state.markovOptions
+	      });
 	      _this.getGeneratedSentences().then(function (generateSentences) {
 	        console.log("generateSentences:", generateSentences);
 	        _this.setState({
@@ -37607,6 +37613,23 @@
 	        localStorage.removeItem(KEY_NAME);
 	        localStorage.removeItem(KEY_DATA);
 	      }
+	    }
+	  }, {
+	    key: 'restoreSettings',
+	    value: function restoreSettings() {
+	      try {
+	        var settings = localStorage.getItem(KEY_SETTINGS);
+	        if (settings) {
+	          return JSON.parse(settings);
+	        }
+	      } catch (e) {
+	        console.error("failed to load settings:", e);
+	      }
+	    }
+	  }, {
+	    key: 'saveSettings',
+	    value: function saveSettings(settings) {
+	      localStorage.setItem(KEY_SETTINGS, JSON.stringify(settings));
 	    }
 	  }, {
 	    key: 'updateMarkovOption',

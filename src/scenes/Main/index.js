@@ -21,6 +21,7 @@ import { range } from '../../utils';
 
 const KEY_NAME = 'mrkvy_file';
 const KEY_DATA = 'mrkvy_data';
+const KEY_SETTINGS = 'mrkvy_settings';
 
 const styles = {
   card: {
@@ -94,14 +95,15 @@ class Main extends React.Component {
   constructor(props) {
     super(props);
     let file = this.restoreFile();
+    const settings = this.restoreSettings();
     this.state = {
       file,
-      markovOptions: {
+      markovOptions: (settings && settings.markovOptions) || {
         stateSize: 3,
         minWords: 10,
         maxWords: 0,
       },
-      sentenceCount: 10,
+      sentenceCount: (settings && settings.sentenceCount) || 10,
     };
     this.onLoad = file => {
       console.log("onload:", file && file.name);
@@ -150,6 +152,10 @@ class Main extends React.Component {
       }
     );
     this.updateGenerationDebounced = debounce(() => {
+      this.saveSettings({
+        sentenceCount: this.state.sentenceCount,
+        markovOptions: this.state.markovOptions
+      });
       this.getGeneratedSentences().then(generateSentences => {
         console.log("generateSentences:", generateSentences);
         this.setState({
@@ -189,6 +195,21 @@ class Main extends React.Component {
       localStorage.removeItem(KEY_NAME);
       localStorage.removeItem(KEY_DATA);
     }
+  }
+
+  restoreSettings() {
+    try {
+      const settings = localStorage.getItem(KEY_SETTINGS);
+      if (settings) {
+        return JSON.parse(settings);
+      }
+    } catch(e) {
+      console.error("failed to load settings:", e);
+    }
+  }
+
+  saveSettings(settings) {
+    localStorage.setItem(KEY_SETTINGS, JSON.stringify(settings));
   }
 
   updateMarkovOption(key, value) {
