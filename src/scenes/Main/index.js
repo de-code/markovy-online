@@ -42,6 +42,23 @@ const styles = {
     },
     slider: {
     }
+  },
+  info: {
+    marginTop: 10
+  },
+  stats: {
+    container: {
+    },
+    label: {
+      display: 'inline-block',
+      minWidth: 100,
+      fontWeight: 'bold'
+    },
+    value: {
+      display: 'inline-block',
+      textAlign: 'right',
+      minWidth: 100
+    }
   }
 }
 
@@ -49,6 +66,13 @@ const LabelledSlider = ({ label, ...otherProps }) => (
   <View style={ styles.slider.container }>
     <Text style={ styles.slider.label }>{ label }</Text>
     <Slider style={ styles.slider.slider } { ...otherProps }/>
+  </View>
+);
+
+const LabelledStats = ({ label, value }) => (
+  <View style={ styles.stats.container }>
+    <Text style={ styles.stats.label }>{ `${label}: ` }</Text>
+    <Text style={ styles.stats.value }>{ value }</Text>
   </View>
 );
 
@@ -83,6 +107,7 @@ class Main extends React.Component {
       const minWordsPerLine = Math.min(...wordsPerLine);
       const maxWordsPerLine = Math.max(...wordsPerLine);
       return {
+        charCount: data.length,
         lines,
         minWordsPerLine,
         maxWordsPerLine
@@ -168,7 +193,7 @@ class Main extends React.Component {
   }
 
   render() {
-    const { minWordsPerLine, maxWordsPerLine } = this.getParsedData();
+    const { charCount, lines, minWordsPerLine, maxWordsPerLine } = this.getParsedData();
     const { markovOptions, sentenceCount, generateSentences, loading } = this.state;
     const { minWords, stateSize } = markovOptions;
     return (
@@ -180,6 +205,12 @@ class Main extends React.Component {
                 file={ this.state.file }
                 onLoad={ this.onLoad }
               />
+              <View style={ styles.info }>
+                <LabelledStats label="Chars" value={ charCount }/>
+                <LabelledStats label="Lines" value={ lines && lines.length }/>
+                <LabelledStats label="Min Words" value={ minWordsPerLine }/>
+                <LabelledStats label="Max Words" value={ maxWordsPerLine }/>
+              </View>
             </View>
             <View style={ styles.step }>
               <View style={ styles.field }>

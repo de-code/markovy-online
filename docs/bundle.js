@@ -37434,6 +37434,22 @@
 	    },
 	    label: {},
 	    slider: {}
+	  },
+	  info: {
+	    marginTop: 10
+	  },
+	  stats: {
+	    container: {},
+	    label: {
+	      display: 'inline-block',
+	      minWidth: 100,
+	      fontWeight: 'bold'
+	    },
+	    value: {
+	      display: 'inline-block',
+	      textAlign: 'right',
+	      minWidth: 100
+	    }
 	  }
 	};
 
@@ -37450,6 +37466,25 @@
 	      label
 	    ),
 	    _react2.default.createElement(_components.Slider, _extends({ style: styles.slider.slider }, otherProps))
+	  );
+	};
+
+	var LabelledStats = function LabelledStats(_ref2) {
+	  var label = _ref2.label,
+	      value = _ref2.value;
+	  return _react2.default.createElement(
+	    _components.View,
+	    { style: styles.stats.container },
+	    _react2.default.createElement(
+	      _components.Text,
+	      { style: styles.stats.label },
+	      label + ': '
+	    ),
+	    _react2.default.createElement(
+	      _components.Text,
+	      { style: styles.stats.value },
+	      value
+	    )
 	  );
 	};
 
@@ -37493,6 +37528,7 @@
 	      var minWordsPerLine = Math.min.apply(Math, _toConsumableArray(wordsPerLine));
 	      var maxWordsPerLine = Math.max.apply(Math, _toConsumableArray(wordsPerLine));
 	      return {
+	        charCount: data.length,
 	        lines: lines,
 	        minWordsPerLine: minWordsPerLine,
 	        maxWordsPerLine: maxWordsPerLine
@@ -37584,6 +37620,8 @@
 	      var _this2 = this;
 
 	      var _getParsedData = this.getParsedData(),
+	          charCount = _getParsedData.charCount,
+	          lines = _getParsedData.lines,
 	          minWordsPerLine = _getParsedData.minWordsPerLine,
 	          maxWordsPerLine = _getParsedData.maxWordsPerLine;
 
@@ -37610,7 +37648,15 @@
 	              _react2.default.createElement(_components.FileInput, {
 	                file: this.state.file,
 	                onLoad: this.onLoad
-	              })
+	              }),
+	              _react2.default.createElement(
+	                _components.View,
+	                { style: styles.info },
+	                _react2.default.createElement(LabelledStats, { label: 'Chars', value: charCount }),
+	                _react2.default.createElement(LabelledStats, { label: 'Lines', value: lines && lines.length }),
+	                _react2.default.createElement(LabelledStats, { label: 'Min Words', value: minWordsPerLine }),
+	                _react2.default.createElement(LabelledStats, { label: 'Max Words', value: maxWordsPerLine })
+	              )
 	            ),
 	            _react2.default.createElement(
 	              _components.View,
@@ -38311,7 +38357,7 @@
 	          !file && _react2.default.createElement(
 	            _core.Text,
 	            null,
-	            'Try dropping a file here, or click to select a file.'
+	            'Try dropping a JSON or text file here, or click to select a file.'
 	          )
 	        )
 	      );

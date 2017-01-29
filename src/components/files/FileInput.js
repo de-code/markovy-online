@@ -119,7 +119,7 @@ class FileInput extends React.Component {
             )
           }
           { !file &&
-            <Text>Try dropping a file here, or click to select a file.</Text>
+            <Text>Try dropping a JSON or text file here, or click to select a file.</Text>
           }
         </Dropzone>
       </View>
