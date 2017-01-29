@@ -5,7 +5,11 @@ import debounce from 'debounce';
 
 import {
   Card,
+  CardHeader,
+  CardText,
   FileInput,
+  FontAwesomeIcon,
+  Link,
   LoadingIndicator,
   Slider,
   Text,
@@ -20,8 +24,11 @@ const KEY_DATA = 'mrkvy_data';
 
 const styles = {
   card: {
-    padding: 10,
     marginBottom: 20
+  },
+  cardHeader: {
+    backgroundColor: '#eee',
+    fontWeight: 'bold'
   },
   controlPanel: {
     display: 'flex'
@@ -59,6 +66,13 @@ const styles = {
       textAlign: 'right',
       minWidth: 100
     }
+  },
+  paragraph: {
+    marginBottom: 10
+  },
+  link: {
+    textDecoration: 'none',
+    cursor: 'hand'
   }
 }
 
@@ -198,8 +212,14 @@ class Main extends React.Component {
     const { minWords, stateSize } = markovOptions;
     return (
       <View>
-        <Card style={ styles.card }>
-          <View style={ styles.controlPanel }>
+        <Card style={ styles.card } initiallyExpanded={ true }>
+          <CardHeader
+            style={ styles.cardHeader }
+            title="Text Generator"
+            actAsExpander={ true }
+            showExpandableButton={ true }
+          />
+          <CardText style={ styles.controlPanel } expandable={ true }>
             <View style={ styles.step }>
               <FileInput
                 file={ this.state.file }
@@ -247,20 +267,56 @@ class Main extends React.Component {
                 }
               </View>
             </View>
-          </View>
+          </CardText>
         </Card>
-        <Card style={ styles.card }>
-          <LoadingIndicator loading={ loading }>
-            <View>
-              {
-                generateSentences && generateSentences.map((sentence, index) => (
-                  <View key={ index }>
-                    <Text>{ sentence }</Text>
-                  </View>
-                ))
-              }
+        <Card style={ styles.card } initiallyExpanded={ true }>
+          <CardHeader
+            style={ styles.cardHeader }
+            title="Results"
+            actAsExpander={ true }
+            showExpandableButton={ true }
+          />
+          <CardText expandable={ true }>
+            <LoadingIndicator loading={ loading }>
+              <View>
+                {
+                  generateSentences && generateSentences.map((sentence, index) => (
+                    <View key={ index }>
+                      <Text>{ sentence }</Text>
+                    </View>
+                  ))
+                }
+              </View>
+            </LoadingIndicator>
+          </CardText>
+        </Card>
+        <Card style={ styles.card } initiallyExpanded={ true }>
+          <CardHeader
+            style={ styles.cardHeader }
+            title="Info"
+            actAsExpander={ true }
+            showExpandableButton={ true }
+          />
+          <CardText expandable={ true }>
+            <View style={ styles.paragraph }>
+              <Text>The selected file will be processed within the browser and won't be submitted
+                to the internet.
+              </Text>
             </View>
-          </LoadingIndicator>
+            <View style={ styles.paragraph }>
+              <Text>If a JSON file is selected, all of the string values but not keys, at any depth,
+                will be treated as lines. Or multiple lines if those strings contain line feeds.
+                Any other data is ignored.
+              </Text>
+            </View>
+            <View style={ styles.paragraph }>
+              <Link style={ styles.link } href="https://github.com/de-code/markovy-online">
+                <FontAwesomeIcon name="github"/>
+                <Text>{ ' ' }</Text>
+                <Text>GitHub</Text>
+              </Link>
+            </View>
+          </CardText>
         </Card>
       </View>
     );
