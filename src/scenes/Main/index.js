@@ -1,10 +1,12 @@
 import React from 'react';
 import { createSelector } from 'reselect';
 import Markov from 'markov-strings';
+import debounce from 'debounce';
 
 import {
   Card,
   FileInput,
+  LoadingIndicator,
   Slider,
   Text,
   Toggle,
@@ -67,6 +69,7 @@ class Main extends React.Component {
       console.log("onload:", file && file.name);
       this.setState({ file });
       this.saveFile(file);
+      this.updateGeneration();
     }
     this.getData = () => this.state.file && this.state.file.data;
     this.getParsedData = createSelector(this.getData, data => {
@@ -106,7 +109,24 @@ class Main extends React.Component {
         }
         return range(sentenceCount).map(() => markov.generateSentenceSync().string);
       }
-    )
+    );
+    this.updateGenerationDebounced = debounce(() => {
+      const generateSentences = this.getGeneratedSentences();
+      this.setState({
+        generateSentences,
+        loading: false
+      });
+    }, 200);
+    this.updateGeneration = () => {
+      this.setState({
+        loading: true
+      });
+      this.updateGenerationDebounced();
+    };
+  }
+
+  componentDidMount() {
+    this.updateGeneration();
   }
 
   restoreFile() {
@@ -137,14 +157,18 @@ class Main extends React.Component {
         [key]: value
       }
     }));
+    this.updateGeneration();
+  }
+
+  updateOption(state) {
+    this.setState(state);
+    this.updateGeneration();
   }
 
   render() {
-    const generateSentences = this.getGeneratedSentences();
     const { minWordsPerLine, maxWordsPerLine } = this.getParsedData();
-    const { markovOptions, sentenceCount } = this.state;
+    const { markovOptions, sentenceCount, generateSentences, loading } = this.state;
     const { minWords, stateSize } = markovOptions;
-    console.log("stateSize:", stateSize);
     return (
       <View>
         <Card style={ styles.card }>
@@ -185,7 +209,7 @@ class Main extends React.Component {
                     min={ 1 }
                     max={ 100 }
                     step={ 1 }
-                    onChange={ (event, newValue) => this.setState({ sentenceCount: newValue }) }
+                    onChange={ (event, newValue) => this.updateOption({ sentenceCount: newValue }) }
                   />
                 }
               </View>
@@ -193,13 +217,17 @@ class Main extends React.Component {
           </View>
         </Card>
         <Card style={ styles.card }>
-          {
-            generateSentences && generateSentences.map((sentence, index) => (
-              <View key={ index }>
-                <Text>{ sentence }</Text>
-              </View>
-            ))
-          }
+          <LoadingIndicator loading={ loading }>
+            <View>
+              {
+                generateSentences && generateSentences.map((sentence, index) => (
+                  <View key={ index }>
+                    <Text>{ sentence }</Text>
+                  </View>
+                ))
+              }
+            </View>
+          </LoadingIndicator>
         </Card>
       </View>
     );
