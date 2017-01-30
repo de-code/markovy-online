@@ -299,13 +299,6 @@ class Main extends React.Component {
               </View>
             </View>
           </CardText>
-          <CardActions>
-            <FlatButton
-              label="Refresh"
-              onClick={ this.refresh }
-              disabled={ loading || !generateSentences || !generateSentences.length }
-            />
-          </CardActions>
         </Card>
         <Card style={ styles.card } initiallyExpanded={ true }>
           <CardHeader
@@ -314,6 +307,13 @@ class Main extends React.Component {
             actAsExpander={ true }
             showExpandableButton={ true }
           />
+          <CardActions>
+            <FlatButton
+              label="Refresh"
+              onClick={ this.refresh }
+              disabled={ loading || !generateSentences || !generateSentences.length }
+            />
+          </CardActions>
           <CardText expandable={ true }>
             <LoadingIndicator loading={ loading }>
               <View>

@@ -37750,15 +37750,6 @@
 	                })
 	              )
 	            )
-	          ),
-	          _react2.default.createElement(
-	            _components.CardActions,
-	            null,
-	            _react2.default.createElement(_components.FlatButton, {
-	              label: 'Refresh',
-	              onClick: this.refresh,
-	              disabled: loading || !generateSentences || !generateSentences.length
-	            })
 	          )
 	        ),
 	        _react2.default.createElement(
@@ -37770,6 +37761,15 @@
 	            actAsExpander: true,
 	            showExpandableButton: true
 	          }),
+	          _react2.default.createElement(
+	            _components.CardActions,
+	            null,
+	            _react2.default.createElement(_components.FlatButton, {
+	              label: 'Refresh',
+	              onClick: this.refresh,
+	              disabled: loading || !generateSentences || !generateSentences.length
+	            })
+	          ),
 	          _react2.default.createElement(
 	            _components.CardText,
 	            { expandable: true },
