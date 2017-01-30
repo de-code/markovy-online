@@ -13,6 +13,8 @@ import {
   FileInput,
   FontAwesomeIcon,
   Link,
+  List,
+  ListItem,
   LoadingIndicator,
   Slider,
   Text,
@@ -261,7 +263,7 @@ class Main extends React.Component {
         <Card style={ styles.card } initiallyExpanded={ true }>
           <CardHeader
             style={ styles.cardHeader }
-            title="Text Generator"
+            title="Text Generator using a Markov Chain"
             actAsExpander={ true }
             showExpandableButton={ true }
           />
@@ -376,6 +378,14 @@ class Main extends React.Component {
                 will be treated as lines. Or multiple lines if those strings contain line feeds.
                 Any other data is ignored.
               </Text>
+            </View>
+            <View style={ styles.paragraph }>
+              <Text>Some resources you might find interesting:</Text>
+              <List>
+                <ListItem>
+                  <Link href="http://www.gutenberg.org/cache/epub/11/pg11.txt">Alice's Adventures in Wonderland</Link>
+                </ListItem>
+              </List>
             </View>
             <View style={ styles.paragraph }>
               <Link style={ styles.link } href="https://github.com/de-code/markovy-online">
