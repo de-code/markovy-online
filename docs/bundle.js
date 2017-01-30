@@ -37516,7 +37516,8 @@
 	        minWords: 10,
 	        maxWords: 0
 	      },
-	      sentenceCount: settings && settings.sentenceCount || 10
+	      sentenceCount: settings && settings.sentenceCount || 10,
+	      reqId: 0
 	    };
 	    _this.onLoad = function (file) {
 	      console.log("onload:", file && file.name);
@@ -37558,7 +37559,9 @@
 	    });
 	    _this.getGeneratedSentences = (0, _reselect.createSelector)(_this.getMarkov, function () {
 	      return _this.state.sentenceCount;
-	    }, function (markov, sentenceCount) {
+	    }, function () {
+	      return _this.state.reqId;
+	    }, function (markov, sentenceCount, reqId) {
 	      if (!markov) {
 	        return Promise.resolve([]);
 	      }
@@ -37582,6 +37585,12 @@
 	        loading: true
 	      });
 	      _this.updateGenerationDebounced();
+	    };
+	    _this.refresh = function () {
+	      _this.setState({
+	        reqId: _this.state.reqId + 1
+	      });
+	      _this.updateGeneration();
 	    };
 	    return _this;
 	  }
@@ -37741,6 +37750,15 @@
 	                })
 	              )
 	            )
+	          ),
+	          _react2.default.createElement(
+	            _components.CardActions,
+	            null,
+	            _react2.default.createElement(_components.FlatButton, {
+	              label: 'Refresh',
+	              onClick: this.refresh,
+	              disabled: loading || !generateSentences || !generateSentences.length
+	            })
 	          )
 	        ),
 	        _react2.default.createElement(

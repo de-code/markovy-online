@@ -5,8 +5,10 @@ import debounce from 'debounce';
 
 import {
   Card,
+  CardActions,
   CardHeader,
   CardText,
+  FlatButton,
   FileInput,
   FontAwesomeIcon,
   Link,
@@ -104,6 +106,7 @@ class Main extends React.Component {
         maxWords: 0,
       },
       sentenceCount: (settings && settings.sentenceCount) || 10,
+      reqId: 0
     };
     this.onLoad = file => {
       console.log("onload:", file && file.name);
@@ -144,7 +147,8 @@ class Main extends React.Component {
     this.getGeneratedSentences = createSelector(
       this.getMarkov,
       () => this.state.sentenceCount,
-      (markov, sentenceCount) => {
+      () => this.state.reqId,
+      (markov, sentenceCount, reqId) => {
         if (!markov) {
           return Promise.resolve([]);
         }
@@ -170,6 +174,12 @@ class Main extends React.Component {
       });
       this.updateGenerationDebounced();
     };
+    this.refresh = () => {
+      this.setState({
+        reqId: this.state.reqId + 1
+      });
+      this.updateGeneration();
+    }
   }
 
   componentDidMount() {
@@ -289,6 +299,13 @@ class Main extends React.Component {
               </View>
             </View>
           </CardText>
+          <CardActions>
+            <FlatButton
+              label="Refresh"
+              onClick={ this.refresh }
+              disabled={ loading || !generateSentences || !generateSentences.length }
+            />
+          </CardActions>
         </Card>
         <Card style={ styles.card } initiallyExpanded={ true }>
           <CardHeader
