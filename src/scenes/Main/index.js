@@ -2,6 +2,7 @@ import React from 'react';
 import { createSelector } from 'reselect';
 import markovClientFactory from '../../markov';
 import debounce from 'debounce';
+import clipboard from 'clipboard-js';
 
 import {
   Card,
@@ -170,7 +171,9 @@ class Main extends React.Component {
     }, 200);
     this.updateGeneration = () => {
       this.setState({
-        loading: true
+        loading: true,
+        copyToClipboardSuccess: false,
+        copyToClipboardError: false
       });
       this.updateGenerationDebounced();
     };
@@ -180,6 +183,17 @@ class Main extends React.Component {
       });
       this.updateGeneration();
     }
+    this.copyToClipboard = () => {
+      const { generateSentences } = this.state;
+      if (generateSentences) {
+        clipboard.copy(generateSentences.join('\n')).then(() => this.setState({
+          copyToClipboardSuccess: true,
+          copyToClipboardError: false
+        })).catch(err => this.setState({
+          copyToClipboardError: true
+        }));
+      }
+    };
   }
 
   componentDidMount() {
@@ -239,7 +253,8 @@ class Main extends React.Component {
 
   render() {
     const { charCount, lines, minWordsPerLine, maxWordsPerLine } = this.getParsedData();
-    const { markovOptions, sentenceCount, generateSentences, loading } = this.state;
+    const { markovOptions, sentenceCount, generateSentences, loading,
+      copyToClipboardSuccess, copyToClipboardError } = this.state;
     const { minWords, stateSize } = markovOptions;
     return (
       <View>
@@ -313,6 +328,21 @@ class Main extends React.Component {
               onClick={ this.refresh }
               disabled={ loading || !generateSentences || !generateSentences.length }
             />
+            <FlatButton
+              onClick={ this.copyToClipboard }
+              disabled={ loading || !generateSentences || !generateSentences.length }
+            >
+              <View>
+                <Text>Copy</Text>
+                <Text>{ ' ' }</Text>
+                { copyToClipboardSuccess && (
+                  <FontAwesomeIcon name="check-square-o"/>
+                )}
+                { copyToClipboardError && (
+                  <FontAwesomeIcon name="warning"/>
+                )}
+              </View>
+            </FlatButton>
           </CardActions>
           <CardText expandable={ true }>
             <LoadingIndicator loading={ loading }>
